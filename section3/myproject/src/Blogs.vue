@@ -1,16 +1,25 @@
 <template>
   <div class="blogs">
     <h2>{{blogTitle}}</h2>
+    <input type="text" v-model="searchTerm">
     <button @click="changeTitle">Change Title</button>
+    <div v-for="post in filterdPosts" :key="post.id">
+      <h3>{{post.title}}</h3>
+      <p>{{post.body | snippet}}</p>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Blogs',
   data() {
     return {
-      blogTitle: 'Blogs'
+      blogTitle: 'Blogs',
+      posts: [],
+      searchTerm: ''
     }
   },
   methods: {
@@ -18,14 +27,28 @@ export default {
       this.blogTitle = 'Amazing Blog Site'
     }
   },  
+  computed: {
+    filterdPosts() {
+      return this.posts.filter(post => {
+        return post.title.match(this.searchTerm)
+      })
+    }
+  },
   beforeCreate() {
-    alert('beforeCreate hook')
+    // alert('beforeCreate hook')
   },
   created() {
-    alert('created hook')
+    // alert('created hook')
+    axios.get('https://jsonplaceholder.typicode.com/posts/')
+    .then(response => {
+      // console.log(response.data)
+      this.posts = response.data
+    }).catch(err => {
+      console.log(err)
+    })
   },
   beforeUpdate() {
-    alert('beforeUpdate hook');
+    // alert('beforeUpdate hook')
   }
 }
 </script>
